@@ -17,6 +17,8 @@ import passport from 'passport';
 import loggerTest from "./routes/loggerTest.router.js";
 import {SessMidleware } from './dao/dbConfig.js';
 import config from './config/config.js'; 
+import swaggerJSDoc from "swagger-jsdoc";
+import swaggerUiExpress from "swagger-ui-express";
 const port = config.port
 
 //INICIALIZAMOS EXPRESS
@@ -42,6 +44,20 @@ app.use(SessMidleware)
 initializePassport();
 app.use(passport.initialize());
 app.use(passport.session());
+
+const swaggerOptions = {
+    definition: {
+      openapi: "3.0.1",
+      info: {
+        title: "CoderHouse Final Project Documentation",
+        description: "API Ecommerce - Commission 44985",
+      },
+    },
+    apis: [`${__dirname}/docs/**/*.yaml`],
+  };
+
+  const specs = swaggerJSDoc(swaggerOptions);
+app.use("/apidocs", swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
 
 app.use('/', viewRouter); //usamos la ruta de  viewRouter
 app.use('/api/products', productRouter);
